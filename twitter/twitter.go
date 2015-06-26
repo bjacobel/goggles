@@ -6,6 +6,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
+	"net/url"
 )
 
 var spw = spew.NewDefaultConfig()
@@ -46,4 +47,19 @@ func Stream() {
 	anaconda.SetConsumerKey(config.ConsumerKey)
 	anaconda.SetConsumerSecret(config.ConsumerSecret)
 	twitter := anaconda.NewTwitterApi(config.AccessToken, config.AccessTokenSecret)
+
+	v := url.Values{}
+	v.Set("language", "en")
+
+	stream := twitter.PublicStreamSample(v)
+
+	for {
+		select {
+		case <-stream.Quit:
+			log.Fatal("Quitting")
+			break
+		case elem := <-stream.C:
+			log.Println("%s", spw.Sdump(elem))
+		}
+	}
 }
