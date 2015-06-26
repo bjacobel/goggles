@@ -56,10 +56,14 @@ func Stream() {
 	for {
 		select {
 		case <-stream.Quit:
-			log.Fatal("Quitting")
+			log.Fatal("Stream terminated, wrapping up and quitting...")
 			break
-		case elem := <-stream.C:
-			log.Println("%s", spw.Sdump(elem))
+		case tweet := <-stream.C:
+			go HandleTweet(tweet)
 		}
 	}
+}
+
+func HandleTweet(tweet interface{}) {
+	log.Println("%s", spw.Sdump(tweet))
 }
