@@ -59,11 +59,26 @@ func Stream() {
 			log.Fatal("Stream terminated, wrapping up and quitting...")
 			break
 		case tweet := <-stream.C:
-			go HandleTweet(tweet)
+			go handleTweet(tweet)
 		}
 	}
 }
 
-func HandleTweet(tweet interface{}) {
-	log.Println("%s", spw.Sdump(tweet))
+func handleTweet(t interface{}) {
+	// Type assertion to anaconda.Tweet from interface{}
+	if tweet, ok := t.(anaconda.Tweet); ok {
+		if hasMedia(tweet) {
+			log.Println(getMediaURL(tweet))
+		}
+	} else {
+		log.Fatal("Tried to handle a tweet that was not a tweet (?)")
+	}
+}
+
+func hasMedia(tweet anaconda.Tweet) bool {
+	return tweet.Entities.Media != nil
+}
+
+func getMediaURL(tweet anaconda.Tweet) string {
+	return tweet.Entities.Media[0].Media_url_https
 }
