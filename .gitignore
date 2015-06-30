@@ -28,8 +28,7 @@ ansible/env_vars/secure.yml
 
 .vagrant/*
 
-presence-backend
-secrets
+secrets.yml
 
 frontend/node_modules
 frontend/dist
