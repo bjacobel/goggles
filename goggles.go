@@ -1,7 +1,7 @@
 package main
 
 import (
-	//"fmt"
+	"fmt"
 	"github.com/chimeracoder/anaconda"
 	"github.com/davecgh/go-spew/spew"
 	"gopkg.in/yaml.v2"
@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 )
 
@@ -65,7 +66,7 @@ func main() {
 			log.Fatal("Stream terminated, wrapping up and quitting...")
 			break
 		case tweet := <-stream.C:
-			go handleTweet(tweet)
+			handleTweet(tweet)
 		}
 	}
 }
@@ -74,7 +75,11 @@ func handleTweet(t interface{}) {
 	// Type assertion to anaconda.Tweet from interface{}
 	if tweet, ok := t.(anaconda.Tweet); ok {
 		if hasMedia(tweet) {
-			identify(getMediaURL(tweet))
+			classification, confidence := identify(getMediaURL(tweet))
+
+			if confidence > 0.5 {
+				respond(tweet, classification)
+			}
 		}
 	} else {
 		log.Fatal("Tried to handle a tweet that was not a tweet (?)")
@@ -89,27 +94,29 @@ func getMediaURL(tweet anaconda.Tweet) string {
 	return tweet.Entities.Media[0].Media_url_https
 }
 
-func identify(url string) {
+func identify(url string) ([]string, float64) {
 	// download it, save to tmp
 	fileName := download(url)
-
-	// wd, _ := os.Getwd()
 
 	// process it
 	out, err := exec.Command("overfeat/bin/linux_32/overfeat", "-n 1", fileName).CombinedOutput()
 
 	if err != nil {
 		log.Fatal(out, err)
-	} else {
-		log.Printf("%s\n", out)
 	}
 
+	split := strings.Split(string(out), " ")
+	confidence, _ := strconv.ParseFloat(strings.Trim(split[len(split)-1], "\n"), 64)
+	classifier := strings.Split(strings.Trim(strings.Join(split[:len(split)-1], " "), ","), ", ")
+
 	// delete from /tmp
+
+	return classifier, confidence
 }
 
 func download(url string) string {
 	tokens := strings.Split(url, "/")
-	fileName := "/tmp/goggles/" + tokens[len(tokens)-1]
+	fileName := "/tmp/" + tokens[len(tokens)-1]
 
 	output, err := os.Create(fileName)
 
@@ -134,4 +141,14 @@ func download(url string) string {
 	}
 
 	return fileName
+}
+
+func respond(tweet anaconda.Tweet, classification []string) {
+	msg := fmt.Sprintf("That's a %s!", classification[0])
+
+	if len(classification) > 1 {
+		msg = fmt.Sprintf("%s Or maybe a %s?", msg, classification[1])
+	}
+
+	log.Println(msg)
 }
