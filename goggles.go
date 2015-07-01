@@ -1,19 +1,18 @@
 package main
 
 import (
+	//"fmt"
 	"github.com/chimeracoder/anaconda"
 	"github.com/davecgh/go-spew/spew"
 	"gopkg.in/yaml.v2"
-	"io/ioutil"
-	"os/exec"
-	"os"
-	"strings"
-	"net/http"
 	"io"
+	"io/ioutil"
 	"log"
-	"path"
-	"runtime"
+	"net/http"
 	"net/url"
+	"os"
+	"os/exec"
+	"strings"
 )
 
 var spw = spew.NewDefaultConfig()
@@ -94,15 +93,15 @@ func identify(url string) {
 	// download it, save to tmp
 	fileName := download(url)
 
-	// process it
-	_, filename, _, _ := runtime.Caller(1)
+	// wd, _ := os.Getwd()
 
-	out, err := exec.Command(path.Dir(filename) + "/overfeat/bin/linux_32/overfeat -n 1" + fileName).Output()
+	// process it
+	out, err := exec.Command("overfeat/bin/linux_32/overfeat", "-n 1", fileName).CombinedOutput()
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(out, err)
 	} else {
-		log.Println(string(out))
+		log.Printf("%s\n", out)
 	}
 
 	// delete from /tmp
@@ -110,7 +109,7 @@ func identify(url string) {
 
 func download(url string) string {
 	tokens := strings.Split(url, "/")
-	fileName := "tmp/" + tokens[len(tokens)-1]
+	fileName := "/tmp/goggles/" + tokens[len(tokens)-1]
 
 	output, err := os.Create(fileName)
 
@@ -133,8 +132,6 @@ func download(url string) string {
 	if er != nil {
 		log.Fatal("Error while saving", url, "-", er)
 	}
-
-	log.Println(fileName)
 
 	return fileName
 }
