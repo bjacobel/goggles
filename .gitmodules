@@ -1,0 +1,3 @@
+[submodule "OverFeat"]
+	path = OverFeat
+	url = git@github.com:sermanet/OverFeat.git

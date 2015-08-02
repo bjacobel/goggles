@@ -99,7 +99,7 @@ func identify(url string) ([]string, float64) {
 	fileName := download(url)
 
 	// process it
-	out, err := exec.Command("overfeat/bin/linux_32/overfeat", "-n 1", fileName).CombinedOutput()
+	out, err := exec.Command("./OverFeat/bin/macos/overfeat", "-n 1", fileName).CombinedOutput()
 
 	if err != nil {
 		log.Fatal(out, err)
