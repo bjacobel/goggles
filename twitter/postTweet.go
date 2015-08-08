@@ -39,10 +39,10 @@ var quipOptions = []Quip{
 	Quip{"Whoa, %s? Now I've seen everything.", true},
 }
 
-func respond(tweet anaconda.Tweet, classification []string, twitter anaconda.TwitterApi) {
+func Respond(tweet anaconda.Tweet, classification string, twitter anaconda.TwitterApi) {
 	msg := fmt.Sprintf(
 		"%s https://twitter.com/%s/status/%s",
-		message(classification[0]),
+		message(classification),
 		tweet.User.IdStr,
 		tweet.IdStr,
 	)

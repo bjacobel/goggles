@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/bjacobel/goggles/processing"
 	"github.com/bjacobel/goggles/twitter"
 	"github.com/chimeracoder/anaconda"
 	"gopkg.in/yaml.v2"
@@ -14,17 +15,24 @@ type Config struct {
 	ConsumerSecret    string `yaml:"consumer_secret"`
 	AccessToken       string `yaml:"access_token"`
 	AccessTokenSecret string `yaml:"access_token_secret"`
+	AlchemyAPIKey     string `yaml:"alchemy_api_key"`
+}
+
+var twapi *anaconda.TwitterApi
+var config Config
+
+func init() {
+	config = Parse("secrets.yml")
+	anaconda.SetConsumerKey(config.ConsumerKey)
+	anaconda.SetConsumerSecret(config.ConsumerSecret)
+
+	twapi = anaconda.NewTwitterApi(config.AccessToken, config.AccessTokenSecret)
 }
 
 func main() {
 	v := url.Values{}
 	v.Set("language", "en")
 
-	config := Parse("secrets.yml")
-	anaconda.SetConsumerKey(config.ConsumerKey)
-	anaconda.SetConsumerSecret(config.ConsumerSecret)
-
-	twapi := anaconda.NewTwitterApi(config.AccessToken, config.AccessTokenSecret)
 	stream := twapi.PublicStreamSample(v)
 
 	for {
@@ -33,9 +41,24 @@ func main() {
 			log.Fatal("Stream terminated, wrapping up and quitting...")
 			break
 		case tweet := <-stream.C:
-			// Pull a tweet out of the channel, process it (currently this is synchronous)
-			twitter.HandleTweet(tweet, *twapi)
+			// Pull a tweet out of the channel, process it
+			handleTweet(tweet)
 		}
+	}
+}
+
+func handleTweet(t interface{}) {
+	// Type assertion to anaconda.Tweet from interface{}
+	if tweet, ok := t.(anaconda.Tweet); ok {
+		if twitter.HasMedia(tweet) {
+			classification, confidence := processing.Identify(twitter.GetMediaURL(tweet), config.AlchemyAPIKey)
+
+			if confidence > 0.5 && !twitter.Exclude(classification) {
+				twitter.Respond(tweet, classification, *twapi)
+			}
+		}
+	} else {
+		log.Println("Tried to handle a tweet that was not a tweet (?)")
 	}
 }
 
