@@ -18,6 +18,8 @@ func Exclude(noun string) bool {
 	switch noun {
 	case "web site":
 		return true
+	case "person":
+		return true
 	default:
 		return false
 	}

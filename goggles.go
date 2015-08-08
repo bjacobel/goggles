@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/bjacobel/goggles/processing"
+	"github.com/bjacobel/goggles/alchemy"
 	"github.com/bjacobel/goggles/twitter"
 	"github.com/chimeracoder/anaconda"
 	"gopkg.in/yaml.v2"
@@ -51,7 +51,7 @@ func handleTweet(t interface{}) {
 	// Type assertion to anaconda.Tweet from interface{}
 	if tweet, ok := t.(anaconda.Tweet); ok {
 		if twitter.HasMedia(tweet) {
-			classification, confidence := processing.Identify(twitter.GetMediaURL(tweet), config.AlchemyAPIKey)
+			classification, confidence := alchemy.Identify(twitter.GetMediaURL(tweet), config.AlchemyAPIKey)
 
 			if confidence > 0.5 && !twitter.Exclude(classification) {
 				twitter.Respond(tweet, classification, *twapi)

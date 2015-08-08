@@ -6,11 +6,17 @@ import (
 	"log"
 	"math/rand"
 	"net/url"
+	"os"
+	"time"
 )
 
 type Quip struct {
 	Message    string
 	Articleize bool
+}
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
 }
 
 // pairs of messages and whether the noun must be articleized to fit them
@@ -54,6 +60,7 @@ func Respond(tweet anaconda.Tweet, classification string, twitter anaconda.Twitt
 		return
 	} else {
 		log.Printf("Tweeted; link: https://twitter.com/%s/status/%d\n", reply.User.ScreenName, reply.Id)
+		os.Exit(1)
 	}
 }
 
