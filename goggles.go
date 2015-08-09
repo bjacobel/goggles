@@ -4,6 +4,7 @@ import (
 	"github.com/bjacobel/goggles/alchemy"
 	"github.com/bjacobel/goggles/twitter"
 	"github.com/chimeracoder/anaconda"
+	"github.com/robfig/cron"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
@@ -33,33 +34,44 @@ func main() {
 	v := url.Values{}
 	v.Set("language", "en")
 
-	stream := twapi.PublicStreamSample(v)
+	c := cron.New()
+	c.Start()
+	defer c.Stop()
 
-	for {
-		select {
-		case <-stream.Quit:
-			log.Fatal("Stream terminated, wrapping up and quitting...")
-			break
-		case tweet := <-stream.C:
-			// Pull a tweet out of the channel, process it
-			handleTweet(tweet)
+	c.AddFunc("@every 30m", func() {
+		stream := twapi.PublicStreamSample(v)
+		for {
+			select {
+			case <-stream.Quit:
+				log.Fatal("Stream terminated, wrapping up and quitting...")
+				break
+			case tweet := <-stream.C:
+				// Pull a tweet out of the channel, process it
+				if handleTweet(tweet) == true {
+					break
+				}
+			}
 		}
-	}
+	})
+
+	select {}
 }
 
-func handleTweet(t interface{}) {
+func handleTweet(t interface{}) bool {
 	// Type assertion to anaconda.Tweet from interface{}
 	if tweet, ok := t.(anaconda.Tweet); ok {
 		if twitter.HasMedia(tweet) {
 			classification, confidence := alchemy.Identify(twitter.GetMediaURL(tweet), config.AlchemyAPIKey)
 
 			if confidence > 0.5 && !twitter.Exclude(classification) {
-				twitter.Respond(tweet, classification, *twapi)
+				return twitter.Respond(tweet, classification, *twapi)
 			}
 		}
 	} else {
 		log.Println("Tried to handle a tweet that was not a tweet (?)")
 	}
+
+	return false
 }
 
 func Parse(path string) Config {

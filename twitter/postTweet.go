@@ -6,7 +6,6 @@ import (
 	"log"
 	"math/rand"
 	"net/url"
-	"os"
 	"time"
 )
 
@@ -45,7 +44,7 @@ var quipOptions = []Quip{
 	Quip{"Whoa, %s? Now I've seen everything.", true},
 }
 
-func Respond(tweet anaconda.Tweet, classification string, twitter anaconda.TwitterApi) {
+func Respond(tweet anaconda.Tweet, classification string, twitter anaconda.TwitterApi) bool {
 	msg := fmt.Sprintf(
 		"%s https://twitter.com/%s/status/%s",
 		message(classification),
@@ -57,10 +56,10 @@ func Respond(tweet anaconda.Tweet, classification string, twitter anaconda.Twitt
 
 	if errRpl != nil {
 		log.Printf("Error responding: ", errRpl)
-		return
+		return false
 	} else {
 		log.Printf("Tweeted; link: https://twitter.com/%s/status/%d\n", reply.User.ScreenName, reply.Id)
-		os.Exit(1)
+		return true
 	}
 }
 
