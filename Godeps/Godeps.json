@@ -1,0 +1,35 @@
+{
+	"ImportPath": "github.com/bjacobel/goggles",
+	"GoVersion": "go1.4.2",
+	"Deps": [
+		{
+			"ImportPath": "github.com/ChimeraCoder/tokenbucket",
+			"Rev": "c5a927568de7aad8a58127d80bcd36ca4e71e454"
+		},
+		{
+			"ImportPath": "github.com/chimeracoder/anaconda",
+			"Rev": "8ce9921eae6a70c5679a746a9f2736f6be587fa9"
+		},
+		{
+			"ImportPath": "github.com/dustin/go-jsonpointer",
+			"Rev": "75939f54b39e7dafae879e61f65438dadc5f288c"
+		},
+		{
+			"ImportPath": "github.com/dustin/gojson",
+			"Rev": "af16e0e771e2ed110f2785564ae33931de8829e4"
+		},
+		{
+			"ImportPath": "github.com/garyburd/go-oauth/oauth",
+			"Rev": "3131beb69b81ff119923bdefbf029318f1f53794"
+		},
+		{
+			"ImportPath": "github.com/robfig/cron",
+			"Comment": "v1-2-g67823cd",
+			"Rev": "67823cd24dece1b04cced3a0a0b3ca2bc84d875e"
+		},
+		{
+			"ImportPath": "gopkg.in/yaml.v2",
+			"Rev": "7ad95dd0798a40da1ccdff6dff35fd177b5edf40"
+		}
+	]
+}
