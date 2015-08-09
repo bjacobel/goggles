@@ -1,7 +1,7 @@
 package twitter
 
 import (
-	"github.com/chimeracoder/anaconda"
+	"github.com/ChimeraCoder/anaconda"
 )
 
 func HasMedia(tweet anaconda.Tweet) bool {

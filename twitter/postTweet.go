@@ -2,7 +2,7 @@ package twitter
 
 import (
 	"fmt"
-	"github.com/chimeracoder/anaconda"
+	"github.com/ChimeraCoder/anaconda"
 	"log"
 	"math/rand"
 	"net/url"

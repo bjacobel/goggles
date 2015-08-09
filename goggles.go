@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/ChimeraCoder/anaconda"
 	"github.com/bjacobel/goggles/alchemy"
 	"github.com/bjacobel/goggles/twitter"
-	"github.com/chimeracoder/anaconda"
 	"github.com/robfig/cron"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
