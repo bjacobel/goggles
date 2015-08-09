@@ -46,11 +46,11 @@ func main() {
 			select {
 			case <-stream.Quit:
 				log.Fatal("Stream terminated, wrapping up and quitting...")
-				break
+				return
 			case tweet := <-stream.C:
 				// Pull a tweet out of the channel, process it
 				if handleTweet(tweet) == true {
-					break
+					return
 				}
 			}
 		}
