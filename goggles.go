@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/url"
+	"os"
 )
 
 type Config struct {
@@ -24,6 +25,7 @@ var config Config
 
 func init() {
 	config = Parse("secrets.yml")
+
 	anaconda.SetConsumerKey(config.ConsumerKey)
 	anaconda.SetConsumerSecret(config.ConsumerSecret)
 
@@ -77,15 +79,29 @@ func handleTweet(t interface{}) bool {
 func Parse(path string) Config {
 	data, err := ioutil.ReadFile(path)
 
-	if err != nil {
-		log.Fatal(err)
+	if err == nil {
+		var config Config
+
+		if err := yaml.Unmarshal(data, &config); err != nil {
+			log.Fatal(err)
+		}
+
+		return config
+	} else {
+		// Could not read ./secrets.yml. Try to get from env vars
+		config := Config{
+			ConsumerKey:       os.Getenv("CONSUMER_KEY"),
+			ConsumerSecret:    os.Getenv("CONSUMER_SECRET"),
+			AccessToken:       os.Getenv("ACCESS_TOKEN"),
+			AccessTokenSecret: os.Getenv("ACCESS_TOKEN_SECRET"),
+			AlchemyAPIKey:     os.Getenv("ALCHEMY_API_KEY"),
+		}
+
+		if config.ConsumerKey == "" || config.ConsumerSecret == "" || config.AccessToken == "" || config.AccessTokenSecret == "" || config.AlchemyAPIKey == "" {
+			log.Fatal("Missing secrets.yaml *and* environment variables")
+			return Config{}
+		} else {
+			return config
+		}
 	}
-
-	var config Config
-
-	if err := yaml.Unmarshal(data, &config); err != nil {
-		log.Fatal(err)
-	}
-
-	return config
 }
