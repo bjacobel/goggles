@@ -2,13 +2,15 @@ package twitter
 
 import (
 	"fmt"
-	"github.com/ChimeraCoder/anaconda"
 	"log"
 	"math/rand"
 	"net/url"
 	"time"
+
+	"github.com/ChimeraCoder/anaconda"
 )
 
+// A Quip becomes the tweet body
 type Quip struct {
 	Message    string
 	Articleize bool
@@ -44,6 +46,7 @@ var quipOptions = []Quip{
 	Quip{"Whoa, %s? Now I've seen everything.", true},
 }
 
+// Respond to an image somebody posted
 func Respond(tweet anaconda.Tweet, classification string, twitter anaconda.TwitterApi) bool {
 	msg := fmt.Sprintf(
 		"%s https://twitter.com/%s/status/%s",
@@ -57,10 +60,11 @@ func Respond(tweet anaconda.Tweet, classification string, twitter anaconda.Twitt
 	if errRpl != nil {
 		log.Printf("Error responding: ", errRpl)
 		return false
-	} else {
-		log.Printf("Tweeted; link: https://twitter.com/%s/status/%d\n", reply.User.ScreenName, reply.Id)
-		return true
 	}
+
+	// else
+	log.Printf("Tweeted; link: https://twitter.com/%s/status/%d\n", reply.User.ScreenName, reply.Id)
+	return true
 }
 
 func message(noun string) string {
@@ -68,9 +72,10 @@ func message(noun string) string {
 
 	if choice.Articleize {
 		return fmt.Sprintf(choice.Message, articleize(noun))
-	} else {
-		return fmt.Sprintf(choice.Message, noun)
 	}
+
+	// else
+	return fmt.Sprintf(choice.Message, noun)
 }
 
 func isVowel(letter string) bool {
@@ -95,7 +100,8 @@ func isVowel(letter string) bool {
 func articleize(noun string) string {
 	if isVowel(noun[:1]) {
 		return fmt.Sprintf("an %s", noun)
-	} else {
-		return fmt.Sprintf("a %s", noun)
 	}
+
+	// else
+	return fmt.Sprintf("a %s", noun)
 }

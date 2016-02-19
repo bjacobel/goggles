@@ -10,18 +10,19 @@ import (
 	"strconv"
 )
 
-type ImageKeyword struct {
+type imageKeyword struct {
 	Text  string `json: "text"`
 	Score string `json: "score"`
 }
 
-type AlchemyResponse struct {
+type response struct {
 	Status            string         `json: "status"`
-	Url               string         `json: "url"`
+	URL               string         `json: "url"`
 	TotalTransactions string         `json: "totalTransactions"`
-	ImageKeywords     []ImageKeyword `json: "imageKeywords"`
+	ImageKeywords     []imageKeyword `json: "imageKeywords"`
 }
 
+// Identify runs an image url against the Alchemy API
 func Identify(imgurl string, apikey string) (string, float64) {
 	v := url.Values{}
 	v.Set("url", imgurl)
@@ -38,7 +39,7 @@ func Identify(imgurl string, apikey string) (string, float64) {
 		if ioErr != nil {
 			log.Println(ioErr)
 		} else {
-			var response AlchemyResponse
+			var response response
 
 			if marshalErr := json.Unmarshal(body, &response); marshalErr != nil {
 				log.Println(marshalErr)
