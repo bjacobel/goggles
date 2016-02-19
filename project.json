@@ -1,0 +1,7 @@
+{
+  "name": "goggles",
+  "description": "Feature classification in Twitter streaming API",
+  "memory": 128,
+  "timeout": 5,
+  "role": "arn:aws:iam::956518986395:role/lambda_basic"
+}

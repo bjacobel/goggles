@@ -24,10 +24,4 @@ _testmain.go
 
 tmp
 
-ansible/env_vars/secure.yml
-
-.vagrant/*
-
 secrets.yml
-
-goggles
